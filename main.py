@@ -1,5 +1,6 @@
 import aiohttp
 import aiohttp_cors
+import ssl
 import yaml
 
 from aiohttp import web
@@ -18,6 +19,8 @@ async def process(request):
             html = await resp.text()
     except aiohttp.ClientConnectionError:
         return web.json_response({"error": "Unable to reach URL."}, status=400)
+    except aiohttp.InvalidUrlClientError:
+        return web.json_response({"error": "Unrecognized URL scheme."}, status=400)
 
     if not resp.headers.get("Content-Type", "").startswith("text/html"):
         return web.json_response({"error": "The provided URL is not an HTML document."}, status=400)
